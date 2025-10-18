@@ -1,11 +1,7 @@
 const express = require("express");
 const router = express.Router();
-
-console.log("Loading hairstyle routes...");
-
-try {
-    const hairstyleController = require("../controller/hairstyleController");
-    const auth = require("../middleware/auth");
+const hairstyleController = require("../controller/hairstyleController");
+const {auth} = require("../middleware/auth");
     
     console.log("Hairstyle controller loaded successfully");
     
@@ -16,8 +12,6 @@ try {
     router.put("/:id", auth, hairstyleController.updateHairstyle);
     router.delete("/:id", auth, hairstyleController.deleteHairstyle);
     
-} catch (error) {
-    console.error("ERROR loading hairstyle routes:", error.message);
-}
+
 
 module.exports = router;

@@ -1,5 +1,7 @@
+// controllers/bookingController.js
 const { Booking, Shop } = require("../models/model");
 
+// ✅ Create a booking
 exports.createBooking = async (req, res) => {
   try {
     const { shop, service, dateTime } = req.body;
@@ -13,17 +15,27 @@ exports.createBooking = async (req, res) => {
   }
 };
 
+// ✅ Get all bookings
 exports.getBookings = async (req, res) => {
   try {
     let bookings;
     if (req.user.role === "admin") {
-      bookings = await Booking.find().populate("customer", "name email").populate("shop", "name location").populate("payment");
+      bookings = await Booking.find()
+        .populate("customer", "name email")
+        .populate("shop", "name location")
+        .populate("payment");
     } else if (req.user.role === "shop") {
       const userShops = await Shop.find({ owner: req.user.userId });
-      const shopIds = userShops.map(shop => shop._id);
-      bookings = await Booking.find({ shop: { $in: shopIds } }).populate("customer", "name email").populate("shop", "name location").populate("payment");
+      const shopIds = userShops.map((shop) => shop._id);
+      bookings = await Booking.find({ shop: { $in: shopIds } })
+        .populate("customer", "name email")
+        .populate("shop", "name location")
+        .populate("payment");
     } else {
-      bookings = await Booking.find({ customer: req.user.userId }).populate("customer", "name email").populate("shop", "name location").populate("payment");
+      bookings = await Booking.find({ customer: req.user.userId })
+        .populate("customer", "name email")
+        .populate("shop", "name location")
+        .populate("payment");
     }
     res.json(bookings);
   } catch (error) {
@@ -31,30 +43,42 @@ exports.getBookings = async (req, res) => {
   }
 };
 
+// ✅ Get booking by ID
 exports.getBookingById = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id).populate("customer", "name email").populate("shop", "name location").populate("payment");
+    const booking = await Booking.findById(req.params.id)
+      .populate("customer", "name email")
+      .populate("shop", "name location")
+      .populate("payment");
+
     if (!booking) return res.status(404).json({ message: "Booking not found" });
+
     if (req.user.role === "customer" && booking.customer._id.toString() !== req.user.userId) {
       return res.status(403).json({ message: "Not authorized" });
     }
+
     res.json(booking);
   } catch (error) {
     res.status(500).json({ message: "Error fetching booking", error: error.message });
   }
 };
 
+// ✅ Update booking
 exports.updateBooking = async (req, res) => {
   try {
     const { status } = req.body;
     const booking = await Booking.findById(req.params.id).populate("shop");
+
     if (!booking) return res.status(404).json({ message: "Booking not found" });
+
     if (req.user.role === "customer" && booking.customer.toString() !== req.user.userId) {
       return res.status(403).json({ message: "Not authorized" });
     }
+
     if (req.user.role === "shop" && booking.shop.owner.toString() !== req.user.userId) {
       return res.status(403).json({ message: "Not authorized" });
     }
+
     booking.status = status;
     await booking.save();
     res.json({ message: "Booking updated successfully", booking });
@@ -63,13 +87,16 @@ exports.updateBooking = async (req, res) => {
   }
 };
 
+// ✅ Delete booking
 exports.deleteBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) return res.status(404).json({ message: "Booking not found" });
+
     if (booking.customer.toString() !== req.user.userId && req.user.role !== "admin") {
       return res.status(403).json({ message: "Not authorized" });
     }
+
     await Booking.findByIdAndDelete(req.params.id);
     res.json({ message: "Booking deleted successfully" });
   } catch (error) {
