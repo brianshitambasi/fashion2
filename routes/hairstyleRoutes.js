@@ -3,7 +3,7 @@ const router = express.Router();
 const hairstyleController = require("../controller/hairstyleController");
 const {auth} = require("../middleware/auth");
     
-    console.log("Hairstyle controller loaded successfully");
+    // console.log("Hairstyle controller loaded successfully");
     
     router.get("/", hairstyleController.getHairstyles);
     router.get("/shop/:shopId", hairstyleController.getHairstylesByShop);

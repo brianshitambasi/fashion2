@@ -5,7 +5,7 @@ const router = express.Router();
 const bookingController = require("../controller/bookingController");
 const {auth} = require("../middleware/auth");
 
-console.log("✅ Booking routes loaded");
+// console.log("✅ Booking routes loaded");
 
 router.post("/", auth, bookingController.createBooking);
 router.get("/", auth, bookingController.getBookings);

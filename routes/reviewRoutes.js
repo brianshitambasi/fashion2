@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-console.log("Loading review routes...");
+// console.log("Loading review routes...");
 
 const reviewController = require("../controller/reviewController");
     const {auth} = require("../middleware/auth");
     
-    console.log("Review controller loaded successfully");
+    // console.log("Review controller loaded successfully");
     
     router.post("/", auth, reviewController.createReview);
     router.get("/", reviewController.getReviews);
